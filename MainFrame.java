@@ -28,6 +28,7 @@ public class MainFrame extends JFrame {
     // Пункты меню
     private JCheckBoxMenuItem showAxisMenuItem;
     private JCheckBoxMenuItem showMarkersMenuItem;
+    private JCheckBoxMenuItem showLinesMenuItem;
     // Компонент-отображатель графика
     private GraphicsDisplay display = new GraphicsDisplay();
     // Флаг, указывающий на загруженность данных графика
@@ -90,7 +91,15 @@ public class MainFrame extends JFrame {
         graphicsMenu.add(showMarkersMenuItem);
 // Элемент по умолчанию включен (отмечен флажком)
         showMarkersMenuItem.setSelected(true);
+        Action showLinesAction = new AbstractAction("Показывать линии (90%,50%,10%) точек") {
+            public void actionPerformed(ActionEvent event) {
 
+                display.setShowLines(showLinesMenuItem.isSelected());
+            }
+        };
+        showLinesMenuItem = new JCheckBoxMenuItem(showLinesAction);
+        graphicsMenu.add(showLinesMenuItem);
+        showLinesMenuItem.setSelected(true);
 
 // Зарегистрировать обработчик событий, связанных с меню "График"
         graphicsMenu.addMenuListener(new GraphicsMenuListener());
@@ -156,6 +165,7 @@ Double.SIZE/8 байт;
 // Доступность или недоступность элементов меню "График"определяется загруженностью данных
             showAxisMenuItem.setEnabled(fileLoaded);
             showMarkersMenuItem.setEnabled(fileLoaded);
+            showLinesMenuItem.setEnabled(fileLoaded);
         }
         // Обработчик, вызываемый после того, как меню исчезло с экрана
         public void menuDeselected(MenuEvent e) {
