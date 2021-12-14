@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
     private JFileChooser fileChooser = null;
     // Пункты меню
     private JCheckBoxMenuItem showAxisMenuItem;
-
+    private JCheckBoxMenuItem showMarkersMenuItem;
     // Компонент-отображатель графика
     private GraphicsDisplay display = new GraphicsDisplay();
     // Флаг, указывающий на загруженность данных графика
@@ -61,6 +61,7 @@ public class MainFrame extends JFrame {
                     openGraphics(fileChooser.getSelectedFile());
             }
         };
+
 // Добавить соответствующий элемент меню
         fileMenu.add(openGraphicsAction);
         // Создать пункт меню "График"
@@ -79,6 +80,18 @@ public class MainFrame extends JFrame {
         graphicsMenu.add(showAxisMenuItem);
 // Элемент по умолчанию включен (отмечен флажком)
         showAxisMenuItem.setSelected(true);
+        Action showMarkersAction = new AbstractAction("Показывать маркеры точек") {
+            public void actionPerformed(ActionEvent event) {
+// по аналогии с showAxisMenuItem
+                display.setShowMarkers(showMarkersMenuItem.isSelected());
+            }
+        };
+        showMarkersMenuItem = new JCheckBoxMenuItem(showMarkersAction);
+        graphicsMenu.add(showMarkersMenuItem);
+// Элемент по умолчанию включен (отмечен флажком)
+        showMarkersMenuItem.setSelected(true);
+
+
 // Зарегистрировать обработчик событий, связанных с меню "График"
         graphicsMenu.addMenuListener(new GraphicsMenuListener());
 // Установить GraphicsDisplay в цент граничной компоновки
@@ -142,6 +155,7 @@ Double.SIZE/8 байт;
         public void menuSelected(MenuEvent e) {
 // Доступность или недоступность элементов меню "График"определяется загруженностью данных
             showAxisMenuItem.setEnabled(fileLoaded);
+            showMarkersMenuItem.setEnabled(fileLoaded);
         }
         // Обработчик, вызываемый после того, как меню исчезло с экрана
         public void menuDeselected(MenuEvent e) {

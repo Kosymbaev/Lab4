@@ -24,7 +24,7 @@ public class GraphicsDisplay extends JPanel {
     private Double[][] graphicsData;
 
     private boolean showAxis = true;
-
+    private boolean showMarkers = true;
     // Границы диапазона пространства, подлежащего отображению
     private double minX;
     private double maxX;
@@ -33,6 +33,7 @@ public class GraphicsDisplay extends JPanel {
 
     private BasicStroke axisStroke;
     private BasicStroke graphicsStroke;
+    private BasicStroke markerStroke;
 
     private Font axisFont;
     // Используемый масштаб отображения
@@ -46,6 +47,9 @@ public class GraphicsDisplay extends JPanel {
                 BasicStroke.JOIN_ROUND, 10.0f, new float[] {5,5,5,5,5,5,15,5,10,5}, 0.0f);
         axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
+        markerStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
+        axisFont = new Font("Serif", Font.BOLD, 36);
     }
 
     // Данный метод вызывается из обработчика элемента меню "Открыть файл с графиком"
@@ -58,6 +62,10 @@ public class GraphicsDisplay extends JPanel {
     }
     public void setShowAxis(boolean showAxis) {
         this.showAxis = showAxis;
+        repaint();
+    }
+    public void setShowMarkers(boolean showMarkers) {
+        this.showMarkers = showMarkers;
         repaint();
     }
 
@@ -133,8 +141,8 @@ minY
         if (showAxis) paintAxis(canvas);
 // Затем отображается сам график
         paintGraphics(canvas);
+        if (showMarkers) paintMarkers(canvas);
 // Затем (если нужно) отображаются маркеры точек, по которым строился график.
-
         canvas.setFont(oldFont);
         canvas.setPaint(oldPaint);
         canvas.setColor(oldColor);
@@ -172,7 +180,6 @@ minY
 // Отобразить график
         canvas.draw(graphics);
     }
-
 
     // Метод, обеспечивающий отображение осей координат
     protected void paintAxis(Graphics2D canvas) {
@@ -249,6 +256,30 @@ minY
         canvas.drawString("0", (float)labelPos.getX() ,(float)(labelPos.getY()));
     }
 
+    protected void paintMarkers(Graphics2D canvas) {
+        canvas.setStroke(markerStroke);
+        canvas.setPaint(Color.RED);
+        for (Double[] point : graphicsData) {
+            GeneralPath marker = new GeneralPath();
+            Point2D.Double center = xyToPoint(point[0], point[1]);
+            marker.moveTo(center.x,center.y);
+            marker.lineTo(center.x - 5,center.y - 5);
+            marker.lineTo(center.x+5,center.y-5);
+            marker.closePath();
+            int i=0;
+            Double sum=0.0;
+            for (i=0;i<graphicsData.length;i++){
+                sum+=graphicsData[i][1];
+            }
+            if (sum/i <point[1]) {
+                canvas.setColor(Color.BLUE);
+                canvas.draw(marker);// Начертить контур маркера
+            }else {
+                canvas.setColor(Color.MAGENTA);
+                canvas.draw(marker);// Начертить контур маркера
+            }
+        }
+    }
     /* Метод-помощник, осуществляющий преобразование координат.
     * Оно необходимо, т.к. верхнему левому углу холста с координатами
     * (0.0, 0.0) соответствует точка графика с координатами (minX, maxY),
